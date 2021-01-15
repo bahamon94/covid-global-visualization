@@ -1,13 +1,13 @@
 <template>
 <div>
  <nav class="fixed flex-wrap items-center justify-between w-full py-4 bg-gray-800 border-t-2 border-white border-solid shadow sm:flex lg:px-12">      
-   <div class="pt-2 font-mono text-xl font-bold text-yellow-50"> <i class="mr-6 text-4xl text-red-500 fas fa-virus"></i>Informacion global COVID-19</div>
+   <div class="pt-2 font-mono text-xl font-bold sm:text-base text-yellow-50"> <i class="mr-6 text-4xl text-red-500 fas fa-virus"></i>Informacion global COVID-19</div>
      
       <div class="relative">
         <select
         v-model="paisSeleccionado"
         @change="cargaResumen()"
-          class="block w-full px-4 py-3 pr-8 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
+          class="select"
         >
           <option value="todos">Todos los Paises</option>
           <option v-for="(pais, $key) in paises" :key="$key" :value="pais"> {{ pais.name }} </option>
@@ -22,7 +22,7 @@
   <div class="container py-4 text-gray-700">
   
     <!-- Tarjetas de informacion datos globales -->
-  <div class="block mx-4 mt-28 sm:mt-20 sm:flex sm:flex-wrap sm:-mx-6">
+  <div class="block mx-4 mt-36 sm:mt-20 sm:flex sm:flex-wrap sm:-mx-6">
     <CardDatos :bg-color="'bg-warning'" :data="datos.confirmados" :titulo="'Total confirmados'" :color-icon="'text-yellow-200'"  :icon="'fa-head-side-mask'"/>
     <CardDatos :bgColor="'bg-success'" :data="datos.recuperados" :titulo="'Total recuperados'" :color-icon="'text-blue-100'" :icon="'fa-running'" />
     <CardDatos :bgColor="'bg-danger'" :data="datos.fallecidos"  :titulo="'Total fallecidos'" :color-icon="'text-red-300'" :icon="'fa-skull-crossbones'" />
@@ -55,7 +55,7 @@ import CardDatos from "@/components/cardConsolidado.vue"
 import Grafica from "@/components/grafica"
 import ListaPaises from "@/components/paisesLista";
 import Mapa from "@/components/mapa";
-import { onMounted, reactive, toRefs } from 'vue';
+import {  onMounted, reactive, toRefs } from 'vue';
 export default {
   name: "App",
   components: {CardDatos, Grafica, ListaPaises,Mapa},
@@ -161,4 +161,7 @@ export default {
 </script>
 
 <style>
+.select {
+  @apply block w-full px-4 py-3 pr-8 leading-tight text-gray-700 bg-gray-200 border border-gray-200 rounded appearance-none focus:outline-none focus:bg-white focus:border-gray-500
+}
 </style>

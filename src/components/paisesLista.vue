@@ -2,8 +2,7 @@
   <div class="divide-y divide-gray-400 ">
 
     <div class="flex items-center pt-2 mb-2 hover:bg-blue-50" 
-      v-for="(pais, $index) in datosPais" :key="$index" @click="verPais(pais)"
-    >
+      v-for="(pais, $index) in datosPais" :key="$index">
       <img class="w-10 h-auto mr-4 rounded-sm" :src="pais.bandera" :alt="pais.name">
 
       <div class="text-sm">
@@ -26,10 +25,7 @@ export default {
   name: "ListaPaises",
   props : { datosPais : Array },
   setup(){
-    function verPais(i) {
-      console.log('pais, ' , i )
-    }
-    return { numeral, verPais }
+    return { numeral }
   }
 };
 </script>

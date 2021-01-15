@@ -34,7 +34,6 @@ export default {
 
     async function pintarGrafica(){
       state.historias = await cargarHistorias()
-      if (state.historias) {
         if (props.pais !== 'todos') {
           state.historias = state.historias.timeline
       }
@@ -43,8 +42,6 @@ export default {
       const recuperados = Object.values(state.historias.recovered)
       const fallecidos = Object.values(state.historias.deaths)
       setGrafica(labels, confirmados, recuperados, fallecidos)
-
-      }
     }
 
     function setGrafica(labels, confirmados, recuperados, fallecidos){
