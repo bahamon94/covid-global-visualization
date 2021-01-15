@@ -1,7 +1,8 @@
 <template>
-  <div class="container py-4 text-gray-700">
-    <div class="flex justify-between mb-4">
-      <div class="pt-2 text-xl font-bold">Informacion global COVID-19</div>
+<div>
+ <nav class="fixed flex-wrap items-center justify-between w-full py-4 bg-gray-800 border-t-2 border-white border-solid shadow sm:flex lg:px-12">      
+   <div class="pt-2 font-mono text-xl font-bold text-yellow-50"> <i class="mr-6 text-4xl text-red-500 fas fa-virus"></i>Informacion global COVID-19</div>
+     
       <div class="relative">
         <select
         v-model="paisSeleccionado"
@@ -17,22 +18,47 @@
           </svg>
         </div>
       </div>
+    </nav>
+  <div class="container py-4 text-gray-700">
+  
+    <!-- Tarjetas de informacion datos globales -->
+  <div class="block mx-4 mt-28 sm:mt-20 sm:flex sm:flex-wrap sm:-mx-6">
+    <CardDatos :bg-color="'bg-warning'" :data="datos.confirmados" :titulo="'Total confirmados'" :color-icon="'text-yellow-200'"  :icon="'fa-head-side-mask'"/>
+    <CardDatos :bgColor="'bg-success'" :data="datos.recuperados" :titulo="'Total recuperados'" :color-icon="'text-blue-100'" :icon="'fa-running'" />
+    <CardDatos :bgColor="'bg-danger'" :data="datos.fallecidos"  :titulo="'Total fallecidos'" :color-icon="'text-red-300'" :icon="'fa-skull-crossbones'" />
+  </div>
+
+  <div class="mt-4 sm:flex sm:flex-wrap sm:-mx-4">
+    <div class="w-full mb-4 sm:w-1/3 sm:px-4">
+      <div class="px-4 py-2 overflow-auto bg-white rounded-md shadow-top" style="height:600px">
+        <ListaPaises :datosPais="datosDePais" />
+      </div>
+    </div>
+
+    <div class="w-full mb-4 sm:w-2/3 sm:px4 ">
+     
+      <div class="px-4 py-2 mb-4 rounded-md shadow-xl" style="height: 175px;">
+        <Grafica :pais="paisSeleccionado"/>
+      </div>
+
+      <div class="px-4 py-4 bg-white rounded-md shadow-top" style="height: 410px" id="mapid">
+        <Mapa :datos-paises="datosDePais" :pais="paisSeleccionado" />
+      </div>
     </div>
   </div>
-  
-  <div class="block mx-4 sm:flex">
-    <CardDatos :bg-color="'bg-warning'" :titulo="'Total confirmados'" :color-icon="'text-yellow-200'"  :icon="'M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'"/>
-    <CardDatos :bgColor="'bg-success'" :titulo="'Total recuperados'" :color-icon="'text-blue-100'" :icon="'M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z'" />
-    <CardDatos :bgColor="'bg-danger'"  :titulo="'Total fallecidos'" :color-icon="'text-red-300'" :icon="'M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-7.536 5.879a1 1 0 001.415 0 3 3 0 014.242 0 1 1 0 001.415-1.415 5 5 0 00-7.072 0 1 1 0 000 1.415z'" />
+</div>
   </div>
 </template>
 
 <script>
 import CardDatos from "@/components/cardConsolidado.vue"
+import Grafica from "@/components/grafica"
+import ListaPaises from "@/components/paisesLista";
+import Mapa from "@/components/mapa";
 import { onMounted, reactive, toRefs } from 'vue';
 export default {
   name: "App",
-  components: {CardDatos},
+  components: {CardDatos, Grafica, ListaPaises,Mapa},
   setup(){
     const state = reactive({
       paisSeleccionado : 'todos',
@@ -46,6 +72,7 @@ export default {
     })
 
     onMounted(() => {
+      cargarPaises()
       cargaResumen()
     })
 
@@ -59,8 +86,7 @@ export default {
 
     function obtenerResumen(diaAnterior = false) {
       const url = obtenerURL() + diaAnterior
-      return fetch(url)
-        .then(response => console.log(response))
+      return fetch(url).then(response =>  response.json() )
     }
 
     function obtenerURL() {
@@ -117,7 +143,19 @@ export default {
       }
     }
 
-    return { ...toRefs(state), cargaResumen , setContadores}
+    function cargarPaises() {
+      Promise.all([obtenerPais(), obtenerPais(true)]).then( (values) => {
+        const [paisDia, paisAyer] = values
+        setContadores(paisDia, paisAyer)
+      })
+    }
+
+    function obtenerPais(diaAnterior = false) {
+      return fetch('https://disease.sh/v3/covid-19/countries?sort=todayCases&yesterday=' + diaAnterior).then( r => r.json() )
+    }
+
+
+    return { ...toRefs(state), cargaResumen }
   }
 };
 </script>
