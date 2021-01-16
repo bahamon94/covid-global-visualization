@@ -45,8 +45,8 @@ export default {
     }
 
     function setGrafica(labels, confirmados, recuperados, fallecidos){
-      state.grafica == null ? "" : state.grafica.destroy()
       const ctx = document.getElementById('myGrafic').getContext('2d')
+      state.grafica === null ? "" : state.grafica.destroy()
       state.grafica = new Chart(ctx, {
          type: 'line',
         data: {
